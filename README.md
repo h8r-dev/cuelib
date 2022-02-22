@@ -13,3 +13,6 @@ import "github.com/h8r/cue"
 * `cloud`： 云厂商
 * `deploy`：部署
 * `git`：代码仓库
+* `logs`：日志
+* `monitoring`：监控
+* `tracing`：分布式追踪
