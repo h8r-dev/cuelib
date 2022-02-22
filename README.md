@@ -1,6 +1,6 @@
 # CUE
 
-`Heighliner` CUE 模块，引入方法：
+`Heighliner` CUE Module，用于构建云原生最佳实践，引入方法：
 ```
 import "github.com/h8r/cue"
 ```
