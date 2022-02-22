@@ -1,13 +1,13 @@
 # CUE
 
-`Heighliner` CUE Module，用于构建云原生最佳实践，引入方法：
+`Heighliner` `CUE Module`，用于构建云原生最佳实践，引入方法：
 ```
 import "github.com/h8r/cue"
 ```
 
 # Package
 
-包按职责划分：
+`CUE Package` 按职责划分：
 
 ```
 ├── alert                         // 报警
