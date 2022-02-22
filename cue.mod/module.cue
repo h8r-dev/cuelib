@@ -1,1 +1,1 @@
-module: "github.com/h8r-dev/cue"
+module: "github.com/h8r-dev/cuelib"
