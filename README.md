@@ -9,10 +9,32 @@ import "github.com/h8r/cue"
 
 包按职责划分：
 
-* `build`：构建
-* `cloud`： 云厂商
-* `deploy`：部署
-* `git`：代码仓库
-* `logs`：日志
-* `monitoring`：监控
-* `tracing`：分布式追踪
+```
+├── alert                         // 报警
+├── build                         // 构建
+│   ├── github                    
+│   ├── gitlab
+│   ├── jenkins
+│   └── tekton
+├── cloud                         // 云厂商
+│   ├── aliyun
+│   ├── huawei
+│   └── tencent
+│       └── tke
+│           └── tke.cue
+├── cue.mod
+│   └── module.cue
+├── deploy                        // 部署
+│   ├── argocd
+│   ├── helm
+│   │   └── helm.cue
+│   └── kubectl
+├── git                           // 代码仓库
+│   ├── coding
+│   ├── github
+│   │   └── github.cue
+│   └── gitlab
+├── logs                          // 日志
+├── monitoring                    // 监控
+└── tracing                       // 分布式追踪
+```
