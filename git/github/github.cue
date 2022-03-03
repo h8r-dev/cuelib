@@ -84,8 +84,12 @@ import (
                                 REPO_NAME=$REPO_NAME-helm
                             fi
                             username=$(curl -sH "Authorization: token $(cat /run/secrets/github)" https://api.github.com/user | jq .login | sed 's/\"//g')
-                            check=$(curl -sH "Authorization: token $(cat /run/secrets/github)" https://api.github.com/repos/$username/$REPO_NAME | jq .id)
-                            if [ "$check" == "null" ]; then
+                            if [ "$username" == "$ORGANIZATION" ]; then
+                                check=$(curl -sH "Authorization: token $(cat /run/secrets/github)" https://api.github.com/repos/$username/$REPO_NAME | jq .id)
+                            else
+                                check=$(curl -sH "Authorization: token $(cat /run/secrets/github)" https://api.github.com/orgs/$ORGANIZATION/repos | jq '.[] | select(.name=="'$REPO_NAME'") | .id')
+                            fi
+                            if [ "$check" == "null" ] || [ "$check" == "" ]; then
                                 echo "repo not exist"
                             else
                                 echo "repo already created"
@@ -116,8 +120,12 @@ import (
                             curl -sH "Authorization: token $(cat /run/secrets/github)" https://api.github.com/user > /user_info.json
                             GITHUB_ID=$(cat /user_info.json | jq '.login' | sed 's/\"//g')
 
-                            echo $GITHUB_EMAIL
-                            echo $GITHUB_ID
+                            # organization id
+
+                            if [ "$username" != "$ORGANIZATION" ]; then
+                                GITHUB_ID=$ORGANIZATION
+                            fi
+
                             git config --global user.email $GITHUB_EMAIL
 
                             # (replace by action) add label link image and docker, package will be public
@@ -146,6 +154,9 @@ import (
                             fi
 
                             # wait for package
+                            echo $GITHUB_ID
+                            echo $ORGANIZATION
+
                             while [[ "$(curl -sH "Authorization: token $(cat /run/secrets/github)" https://api.github.com/repos/$GITHUB_ID/$REPO_NAME/actions/runs | jq --raw-output ''.workflow_runs[0].status'')" != "completed" ]]; 
                             do
                             echo "Waiting for package..."
@@ -162,4 +173,58 @@ import (
 			},
 		]
 	} @dagger(output)
+}
+
+// Get organization member
+#GetOrgMem: {
+    // Github personal access token, and will also use to pull ghcr.io image
+	accessToken: dagger.#Input & {dagger.#Secret}
+
+	// Github organization name or username, currently only supported username
+	organization: dagger.#Input & {string}
+
+    // Get organization member
+    #up: [
+        op.#Load & {
+            from: os.#Container & {
+                image: docker.#Pull & {
+                    from: "ubuntu:latest"
+                }
+                shell: path: "/bin/bash"
+                setup: [
+                    "apt-get update",
+                    "apt-get install jq -y",
+                    "apt-get install git -y",
+                    "apt-get install curl -y",
+                    "apt-get install wget -y",
+                    "apt-get clean"
+                ]
+            }
+        },
+
+        op.#Exec & {
+            mount: "/run/secrets/github": secret: accessToken
+            dir: "/"
+            env: {
+                ORGANIZATION: organization
+            }
+            args: [
+                "/bin/bash",
+                "--noprofile",
+                "--norc",
+                "-eo",
+                "pipefail",
+                "-c",
+                    #"""
+                    mkdir /output
+                    curl -sH "Authorization: token $(cat /run/secrets/github)" https://api.github.com/orgs/$ORGANIZATION/members > /output/member.json
+                """#
+            ]
+            always: true
+        },
+
+        op.#Subdir & {
+			dir: "/output"
+		},
+    ]
 }

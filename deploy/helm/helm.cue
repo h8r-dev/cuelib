@@ -27,8 +27,8 @@ import (
 	// Git repo url
 	repoUrl: dagger.#Input & {string}
 
-	// TODO Kubeconfig path, set infra/kubeconfig and fill kubeconfig to infra/kubeconfig/config.yaml file
-	kubeconfigPath: dagger.#Input & {string}
+	// Cluster kubeconfig
+    myKubeconfig: dagger.#Input & {dagger.#Secret}
 
 	// Deploy namespace
 	namespace: dagger.#Input & {string}
@@ -48,6 +48,9 @@ import (
 			op.#Exec & {
                 mount: "/run/secrets/github": secret: ghcrPassword
 				mount: "/root": from:             sourceCodeDir
+				if (myKubeconfig & dagger.#Secret) != _|_ {
+					mount: "/kubeconfig": secret: myKubeconfig
+				}
 				dir: "/"
 				env: {
 					REPO_URL:        repoUrl
@@ -66,7 +69,7 @@ import (
 					"-c",
 					#"""
 							# use setup avoid download everytime
-							export KUBECONFIG=/root/infra/kubeconfig/config.yaml
+							export KUBECONFIG=/kubeconfig
 							mkdir /root/.ssh && cp /root/infra/ssh/id_rsa /root/.ssh/id_rsa && chmod 400 /root/.ssh/id_rsa
 							GIT_SSH_COMMAND="ssh -vvv -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone $REPO_URL
 							cd $RELEASE_NAME-helm
