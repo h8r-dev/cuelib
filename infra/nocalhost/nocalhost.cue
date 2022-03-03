@@ -276,71 +276,74 @@ import (
     // Wait Nocalhost install
     waitNocalhost: dagger.#Artifact
 
-    do: {
-        string
-
-        #up: [
-            op.#Load & {
-                from: os.#Container & {
-                    image: docker.#Pull & {
-                        from: "ubuntu:latest"
-                    }
-                    shell: path: "/bin/bash"
-                    setup: [
-                        "apt-get update",
-                        "apt-get install jq -y",
-                        "apt-get install git -y",
-                        "apt-get install curl -y",
-                        "apt-get install wget -y",
-                        "apt-get clean"
-                    ]
+    #up: [
+        op.#Load & {
+            from: os.#Container & {
+                image: docker.#Pull & {
+                    from: "ubuntu:latest"
                 }
-			},
-
-            op.#Exec & {
-                args: [
-                    "/bin/bash",
-                    "--noprofile",
-                    "--norc",
-                    "-eo",
-                    "pipefail",
-                    "-c",
-                        #"""
-                        NOCALHOST_URL=$(cat /nocalhost/token.json | jq .url | sed 's/\"//g')
-                        TOKEN=$(cat /nocalhost/token.json | jq .data.token | sed 's/\"//g')
-                        # Get Cluster
-                        clusterID=$(curl -s --location --request GET $NOCALHOST_URL/v2/dev_space/cluster \
-                        --header 'Authorization: Bearer '$TOKEN'' | jq '.data | .[0] | .id')
-                        if [ "$clusterID" == "null"]; then
-                            exit 0
-                        fi
-                        nocalhostUser=( $(curl -k --location --request GET $NOCALHOST_URL/v1/users \
-                        --header 'Authorization: Bearer '$TOKEN'' | jq -r '.data | .[] | .id') )
-
-                        nocalhostDevSpaceUser=( $(curl -k --location --request GET $NOCALHOST_URL/v2/dev_space \
-                        --header 'Authorization: Bearer '$TOKEN'' | jq -r '.data | .[] | .user_id') )
-
-                        # Find user to create devspace
-                        for i in ${nocalhostDevSpaceUser[@]}
-                        do
-                        c=$(echo ${nocalhostUser[*]} | sed 's/\<'$i'\>//')
-                        unset nocalhostUser
-                        nocalhostUser=${c[@]}
-                        done
-
-                        for i in ${nocalhostUser[@]}; do
-                            curl --location --request POST $NOCALHOST_URL/v1/dev_space \
-                            --header 'Authorization: Bearer '$TOKEN'' \
-                            --header 'Content-Type: application/json' \
-                            --data-raw '{"cluster_id":'$clusterID',"cluster_admin":0,"user_id":'$i',"space_name":"","space_resource_limit":null}'
-                        done
-                    """#
+                shell: path: "/bin/bash"
+                setup: [
+                    "apt-get update",
+                    "apt-get install jq -y",
+                    "apt-get install git -y",
+                    "apt-get install curl -y",
+                    "apt-get install wget -y",
+                    "apt-get clean"
                 ]
-                mount: "/nocalhost": from: nocalhostTokenSource
-                mount: "/user": from: waitUser
-                mount: "/cluster": from: waitCluster
-                mount: "/waitnocalhost": from: waitNocalhost
-            },
-        ]
-    }
+            }
+        },
+
+        op.#Exec & {
+            args: [
+                "/bin/bash",
+                "--noprofile",
+                "--norc",
+                "-eo",
+                "pipefail",
+                "-c",
+                    #"""
+                    NOCALHOST_URL=$(cat /nocalhost/token.json | jq .url | sed 's/\"//g')
+                    TOKEN=$(cat /nocalhost/token.json | jq .data.token | sed 's/\"//g')
+                    # Get Cluster
+                    clusterID=$(curl -s --location --request GET $NOCALHOST_URL/v2/dev_space/cluster \
+                    --header 'Authorization: Bearer '$TOKEN'' | jq '.data | .[0] | .id')
+                    if [ "$clusterID" == "null"]; then
+                        exit 0
+                    fi
+                    nocalhostUser=( $(curl -k --location --request GET $NOCALHOST_URL/v1/users \
+                    --header 'Authorization: Bearer '$TOKEN'' | jq -r '.data | .[] | .id') )
+
+                    nocalhostDevSpaceUser=( $(curl -k --location --request GET $NOCALHOST_URL/v2/dev_space \
+                    --header 'Authorization: Bearer '$TOKEN'' | jq -r '.data | .[] | .user_id') )
+
+                    # Find user to create devspace
+                    for i in ${nocalhostDevSpaceUser[@]}
+                    do
+                    c=$(echo ${nocalhostUser[*]} | sed 's/\<'$i'\>//')
+                    unset nocalhostUser
+                    nocalhostUser=${c[@]}
+                    done
+
+                    namespaceArray=()
+                    for i in ${nocalhostUser[@]}; do
+                        namespaceArray[${#namespaceArray[@]}]=$(curl --location --request POST $NOCALHOST_URL/v1/dev_space \
+                        --header 'Authorization: Bearer '$TOKEN'' \
+                        --header 'Content-Type: application/json' \
+                        --data-raw '{"cluster_id":'$clusterID',"cluster_admin":0,"user_id":'$i',"space_name":"","space_resource_limit":null}' | jq '.data | .namespace')
+                    done
+                    mkdir /output
+                    printf '%s\n' "${namespaceArray[@]}" | jq -R . | jq -s . > /output/devNamespace.json
+                """#
+            ]
+            mount: "/nocalhost": from: nocalhostTokenSource
+            mount: "/user": from: waitUser
+            mount: "/cluster": from: waitCluster
+            mount: "/waitnocalhost": from: waitNocalhost
+        },
+
+        op.#Subdir & {
+            dir: "/output"
+        },
+    ]
 }

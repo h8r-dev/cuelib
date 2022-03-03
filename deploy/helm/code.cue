@@ -33,7 +33,7 @@ package helm
 	        helm upgrade $OPTS "$HELM_NAME" "$HELM_CHART"
 	    ;;
 	    installOrUpgrade)
-	        helm upgrade $OPTS --install "$HELM_NAME" "$HELM_CHART"
+	        helm upgrade $OPTS --install "$HELM_NAME" "$HELM_CHART" >/dev/null 2>&1
 	    ;;
 	    *)
 	        echo unsupported helm action "$HELM_ACTION"

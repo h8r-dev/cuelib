@@ -146,6 +146,8 @@ import (
                                 yq w -i /root/helm/Chart.yaml name $BACKEND_NAME
                             fi
 
+                            # wait github repo
+                            sleep 10
                             git add .
                             git commit -m 'init repo'
                             git branch -M main
