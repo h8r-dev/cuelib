@@ -42,5 +42,5 @@ package helm
 	esac
 
     mkdir /output
-    echo 'OK' > /output/wait
+	echo 'OK' > /output/wait
 	"""#
