@@ -8,6 +8,9 @@ import (
 )
 
 #LoginNocalhost: {
+    // Wait Nocalhost install
+    waitNocalhost: dagger.#Artifact
+
     // Nocalhost URL
     nocalhostURL: dagger.#Input & {string}
 
@@ -56,6 +59,7 @@ import (
                 """#
             ]
             always: true
+            mount: "/waitnocalhost": from: waitNocalhost
         },
 
         op.#Subdir & {
@@ -71,6 +75,8 @@ import (
     // Nocalhost login token
     nocalhostTokenSource: dagger.#Artifact
 
+    // Wait Nocalhost install
+    waitNocalhost: dagger.#Artifact
 
     #up: [
         op.#Load & {
@@ -114,6 +120,7 @@ import (
             ]
             mount: "/github": from: githubMemberSource
             mount: "/nocalhost": from: nocalhostTokenSource
+            mount: "/waitnocalhost": from: waitNocalhost
         },
 
         op.#Subdir & {
@@ -128,6 +135,9 @@ import (
 
     // Cluster kubeconfig
     myKubeconfig: dagger.#Input & {dagger.#Secret}
+
+    // Wait Nocalhost install
+    waitNocalhost: dagger.#Artifact
 
     #up: [
         op.#Load & {
@@ -171,6 +181,7 @@ import (
                 mount: "/kubeconfig": secret: myKubeconfig
             }
             mount: "/nocalhost": from: nocalhostTokenSource
+            mount: "waitnocalhost": from: waitNocalhost
         },
 
         op.#Subdir & {
@@ -194,6 +205,9 @@ import (
 
     // Install type
     installType: string | *"helm_chart"
+
+    // Wait Nocalhost install
+    waitNocalhost: dagger.#Artifact
 
     do: {
         string
@@ -240,6 +254,7 @@ import (
                     """#
                 ]
                 mount: "/nocalhost": from: nocalhostTokenSource
+                mount: "waitnocalhost": from: waitNocalhost
             },
         ]
     }
@@ -254,6 +269,9 @@ import (
 
     // Wait cluster created
     waitCluster: dagger.#Artifact
+
+    // Wait Nocalhost install
+    waitNocalhost: dagger.#Artifact
 
     do: {
         string
@@ -318,6 +336,7 @@ import (
                 mount: "/nocalhost": from: nocalhostTokenSource
                 mount: "/user": from: waitUser
                 mount: "/cluster": from: waitCluster
+                mount: "/waitnocalhost": from: waitNocalhost
             },
         ]
     }
