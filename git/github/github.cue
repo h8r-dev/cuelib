@@ -87,7 +87,7 @@ import (
                             if [ "$username" == "$ORGANIZATION" ]; then
                                 check=$(curl -sH "Authorization: token $(cat /run/secrets/github)" https://api.github.com/repos/$username/$REPO_NAME | jq .id)
                             else
-                                check=$(curl -sH "Authorization: token $(cat /run/secrets/github)" https://api.github.com/orgs/$ORGANIZATION/repos | jq '.[] | select(.name=="'$REPO_NAME'") | .id')
+                                check=$(curl -sH "Authorization: token $(cat /run/secrets/github)" https://api.github.com/orgs/$ORGANIZATION/repos?direction=desc | jq '.[] | select(.name=="'$REPO_NAME'") | .id')
                             fi
                             if [ "$check" == "null" ] || [ "$check" == "" ]; then
                                 echo "repo not exist"

@@ -23,7 +23,12 @@ package helm
 	[ -f "/helm/values.yaml" ] && OPTS="$OPTS -f /helm/values.yaml"
 
 	# Select the namespace
-	kubectl create namespace "$KUBE_NAMESPACE" || true
+	kubectl create namespace "$KUBE_NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
+	# kubectl create namespace "$KUBE_NAMESPACE" || true
+
+	# Try delete pending-upgrade helm release
+	# https://github.com/helm/helm/issues/4558
+	kubectl -n "$KUBE_NAMESPACE" delete secret -l name="$HELM_NAME",status=pending-upgrade
 
 	case "$HELM_ACTION" in
 	    install)
@@ -33,7 +38,7 @@ package helm
 	        helm upgrade $OPTS "$HELM_NAME" "$HELM_CHART"
 	    ;;
 	    installOrUpgrade)
-	        helm upgrade $OPTS --install "$HELM_NAME" "$HELM_CHART" >/dev/null 2>&1
+	        helm upgrade $OPTS --install "$HELM_NAME" "$HELM_CHART"
 	    ;;
 	    *)
 	        echo unsupported helm action "$HELM_ACTION"
