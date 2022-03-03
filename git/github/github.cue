@@ -94,6 +94,9 @@ import (
                             else
                                 echo "repo already created"
                                 echo https://github.com/$username/$REPO_NAME.git > /create.json
+                                if [ "$username" != "$ORGANIZATION" ]; then
+                                    echo https://github.com/$ORGANIZATION/$REPO_NAME.git > /create.json
+                                fi
                                 exit 0
                             fi
                             if [ "$username" == "$ORGANIZATION" ]; then
