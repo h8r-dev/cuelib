@@ -181,7 +181,7 @@ import (
                 mount: "/kubeconfig": secret: myKubeconfig
             }
             mount: "/nocalhost": from: nocalhostTokenSource
-            mount: "waitnocalhost": from: waitNocalhost
+            mount: "/waitnocalhost": from: waitNocalhost
         },
 
         op.#Subdir & {
@@ -247,6 +247,9 @@ import (
                         #"""
                         NOCALHOST_URL=$(cat /nocalhost/token.json | jq .url | sed 's/\"//g')
                         TOKEN=$(cat /nocalhost/token.json | jq .data.token | sed 's/\"//g')
+                        export GITURL=$(echo $GITURL | sed 's/ //g')
+                        echo $GITURL
+                        echo '{"context":"{\"application_url\":\"'$GITURL'\",\"application_name\":\"'$APPNAME'\",\"source\":\"'$SOURCE'\",\"install_type\":\"'$INSTALL_TYPE'\",\"resource_dir\":[]}","status":1}'
                         curl --location --request POST $NOCALHOST_URL/v1/application \
                         --header 'Authorization: Bearer '$TOKEN'' \
                         --header 'Content-Type: application/json' \
@@ -254,7 +257,7 @@ import (
                     """#
                 ]
                 mount: "/nocalhost": from: nocalhostTokenSource
-                mount: "waitnocalhost": from: waitNocalhost
+                mount: "/waitnocalhost": from: waitNocalhost
             },
         ]
     }
