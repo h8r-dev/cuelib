@@ -40,4 +40,7 @@ package helm
 	        exit 1
 	    ;;
 	esac
+
+    mkdir /output
+    echo 'OK' > /output/wait
 	"""#
