@@ -18,7 +18,7 @@ import (
 	// Github personal access token, and will also use to pull ghcr.io image
 	accessToken: dagger.#Input & {dagger.#Secret}
 
-	// Github organization name or username, currently only supported username
+	// Github organization name or username
 	organization: dagger.#Input & {string}
 
     // Source code path, for example code/go-gin
