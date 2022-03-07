@@ -122,7 +122,7 @@ import (
 	action: dagger.#Input & {*"installOrUpgrade" | "install" | "upgrade"}
 
 	// time to wait for any individual Kubernetes operation (like Jobs for hooks)
-	timeout: dagger.#Input & {string | *"5m"}
+	timeout: dagger.#Input & {string | *"10m"}
 
 	// if set, will wait until all Pods, PVCs, Services, and minimum number of
 	// Pods of a Deployment, StatefulSet, or ReplicaSet are in a ready state
