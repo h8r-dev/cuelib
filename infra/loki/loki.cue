@@ -14,7 +14,7 @@ import (
 	namespace: dagger.#Input & {string | *"loki"}
 
 	#code: #"""
-	while ! kubectl get secret/loki-grafana -n $KUBE_NAMESPACE; do sleep 1; done
+	while ! kubectl get secret/loki-grafana -n $KUBE_NAMESPACE; do sleep 5; done
 	secret=$(kubectl get secret --namespace $KUBE_NAMESPACE loki-grafana -o jsonpath='{.data.admin-password}' | base64 -d ; echo)
 	echo $secret > /result
 	"""#
