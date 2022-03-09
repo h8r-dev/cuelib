@@ -29,38 +29,73 @@ import (
 	// 80 is the default port.
 	backendServicePort: int | *80
 
+	// cluster version, such v1, v1beta1
+	ingressVersion: string
+
 	// Ingress manifest
 	// generate the resource manifest.
+	
 	manifest: {
-		apiVersion: "networking.k8s.io/v1beta1"
-		kind:       "Ingress"
-		metadata: {
-			"name": name
-			"namespace": namespace
-			annotations: {
-				"h8r": "true"
-				"host": hostName
-				"kubernetes.io/ingress.class": "nginx"
+		if ingressVersion == "v1" {
+			apiVersion: "networking.k8s.io/v1"
+			kind:       "Ingress"
+			metadata: {
+				"name": name
+				"namespace": namespace
+				annotations: {
+					"h8r": "true"
+					"host": hostName
+				}
+			}
+			spec: {
+				rules: [{
+					host:  hostName
+					http: paths: [{
+						"path": path
+						pathType: "Prefix"
+						backend: {
+							service: {
+								"name": backendServiceName
+								port: {
+									"number": backendServicePort
+								}
+							}
+						}
+					}]
+				}]
 			}
 		}
-		spec: {
-			rules: [{
-				host:  hostName
-				http: paths: [{
-					"path": path
-					pathType: "Prefix"
-					backend: {
-						serviceName: backendServiceName
-						servicePort: backendServicePort
-						// service: {
-						// 	"name": backendServiceName
-						// 	port: {
-						// 		"number": backendServicePort
-						// 	}
-						// }
-					}
+		if ingressVersion == "v1beta1" {
+			apiVersion: "networking.k8s.io/v1beta1"
+			kind:       "Ingress"
+			metadata: {
+				"name": name
+				"namespace": namespace
+				annotations: {
+					"h8r": "true"
+					"host": hostName
+					"kubernetes.io/ingress.class": "nginx"
+				}
+			}
+			spec: {
+				rules: [{
+					host:  hostName
+					http: paths: [{
+						"path": path
+						pathType: "Prefix"
+						backend: {
+							serviceName: backendServiceName
+							servicePort: backendServicePort
+							// service: {
+							// 	"name": backendServiceName
+							// 	port: {
+							// 		"number": backendServicePort
+							// 	}
+							// }
+						}
+					}]
 				}]
-			}]
+			}
 		}
 	}
 	

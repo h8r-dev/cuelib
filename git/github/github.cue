@@ -148,10 +148,10 @@ import (
 
                             # wait github repo
                             sleep 10
-                            git add .
-                            git commit -m 'init repo'
+                            git add . &> /dev/null
+                            git commit -m 'init repo' &> /dev/null
                             git branch -M main
-                            git push -u origin main
+                            git push -u origin main &> /dev/null
                             
                             if [ "$ISHELMCHART" == "true" ]; then
                                 echo "ISHELMCHART:" $ISHELMCHART
