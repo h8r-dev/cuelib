@@ -1,5 +1,10 @@
 package grafana
 
+import (
+	"alpha.dagger.io/dagger"
+	"alpha.dagger.io/dagger/op"
+)
+
 #CreateIngressDashboard: {
     // Grafana Url
     url: string
