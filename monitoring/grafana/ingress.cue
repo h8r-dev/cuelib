@@ -3,6 +3,7 @@ package grafana
 import (
 	"alpha.dagger.io/dagger"
 	"alpha.dagger.io/dagger/op"
+    "alpha.dagger.io/alpine"
 )
 
 #CreateIngressDashboard: {
