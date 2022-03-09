@@ -33,7 +33,7 @@ import (
             dir: "/root"
             env: {
                 URL:    url
-                NAME: name
+                NAME: username
                 PASSWORD: password
             }
             mount: "/waitgrafana": from: waitGrafana
