@@ -222,7 +222,15 @@ import (
                 "-c",
                     #"""
                     mkdir /output
-                    curl -sH "Authorization: token $(cat /run/secrets/github)" https://api.github.com/orgs/$ORGANIZATION/members > /output/member.json
+                    username=$(curl -sH "Authorization: token $(cat /run/secrets/github)" https://api.github.com/user | jq .login | sed 's/\"//g')
+                    if [ "$username" == "$ORGANIZATION" ]; then
+                        # personal github name
+                        curl -sH "Authorization: token $(cat /run/secrets/github)" https://api.github.com/user > /output/personal.json
+                        jq -s . /output/personal.json > /output/member.json
+                    else
+                        # github organization name
+                        curl -sH "Authorization: token $(cat /run/secrets/github)" https://api.github.com/orgs/$ORGANIZATION/members > /output/member.json
+                    fi
                 """#
             ]
             always: true
