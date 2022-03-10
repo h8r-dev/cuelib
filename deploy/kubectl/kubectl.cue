@@ -114,6 +114,9 @@ import (
 	// Kube config file
 	kubeconfig: dagger.#Input & {string | dagger.#Secret}
 
+	// Wait for
+	waitFor: *null | dagger.#Artifact
+
 	#code: #"""
 		kubectl create namespace "$KUBE_NAMESPACE"  > /dev/null 2>&1 || true
 
@@ -173,6 +176,9 @@ import (
 			}
 			if (kubeconfig & dagger.#Secret) != _|_ {
 				mount: "/kubeconfig": secret: kubeconfig
+			}
+			if waitFor != null {
+				mount: "/waitfor": from: waitFor
 			}
 		},
 	]

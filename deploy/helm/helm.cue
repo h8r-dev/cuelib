@@ -155,6 +155,9 @@ import (
 	// Kubectl version
 	kubectlVersion: dagger.#Input & {*"v1.19.9" | string}
 
+	// Wait for
+	waitFor: *null | dagger.#Artifact
+
 	#up: [
 		op.#Load & {
 			from: kubernetes.#Kubectl & {
@@ -236,6 +239,9 @@ import (
 				}
 				if (kubeconfig & dagger.#Secret) != _|_ {
 					"/kubeconfig": secret: kubeconfig
+				}
+				if waitFor != null {
+					"/waitfor": from: waitFor
 				}
 			}
 		},

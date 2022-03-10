@@ -130,6 +130,7 @@ import (
                             fi
 
                             git config --global user.email $GITHUB_EMAIL
+                            git config --local http.postBuffer 524288000
 
                             # (replace by action) add label link image and docker, package will be public
                             # link_repo="LABEL org.opencontainers.image.source=https://github.com/$GITHUB_ID/$REPO_NAME"
@@ -148,10 +149,10 @@ import (
 
                             # wait github repo
                             sleep 10
-                            git add . &> /dev/null
-                            git commit -m 'init repo' &> /dev/null
+                            git add .
+                            git commit -m 'init repo'
                             git branch -M main
-                            git push -u origin main &> /dev/null
+                            git push -u origin main
                             
                             if [ "$ISHELMCHART" == "true" ]; then
                                 echo "ISHELMCHART:" $ISHELMCHART
