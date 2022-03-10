@@ -85,6 +85,7 @@ import (
 							--docker-server=ghcr.io \
 							--docker-username=$GHCRNAME \
 							--docker-password=$(cat /run/secrets/github) \
+							--namespace $NAMESPACE \
 							-o yaml --dry-run=client | kubectl apply -f -
 
 							# Try delete pending-upgrade helm release
