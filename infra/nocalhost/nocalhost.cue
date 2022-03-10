@@ -51,6 +51,10 @@ import (
                 "pipefail",
                 "-c",
                 #"""
+                    until $(curl --output /dev/null --silent --head --fail $URL/health); do
+                        printf 'nocalhost ready'
+                        sleep 2
+                    done
                     mkdir /output
                     curl --location --request POST $URL/v1/login \
                     --header "Content-Type: application/json" \
@@ -106,6 +110,11 @@ import (
                 "-c",
                     #"""
                     NOCALHOST_URL=$(cat /nocalhost/token.json | jq .url | sed 's/\"//g')
+                    echo $NOCALHOST_URL
+                    until $(curl --output /dev/null --silent --head --fail $NOCALHOST_URL/health); do
+                        printf 'nocalhost ready'
+                        sleep 2
+                    done
                     TOKEN=$(cat /nocalhost/token.json | jq .data.token | sed 's/\"//g')
                     jq -c '.[]' /github/member.json | while read i; do
                         user=$(echo $i | jq .login | sed 's/\"//g')
@@ -169,6 +178,11 @@ import (
                     #"""
                     kubeconfig=$(base64 -w0 /kubeconfig)
                     NOCALHOST_URL=$(cat /nocalhost/token.json | jq .url | sed 's/\"//g')
+                    echo $NOCALHOST_URL
+                    until $(curl --output /dev/null --silent --head --fail $NOCALHOST_URL/health); do
+                        printf 'nocalhost ready'
+                        sleep 2
+                    done
                     TOKEN=$(cat /nocalhost/token.json | jq .data.token | sed 's/\"//g')
                     curl --location --request POST $NOCALHOST_URL/v1/cluster \
                     --header 'Authorization: Bearer '$TOKEN'' \
@@ -248,6 +262,11 @@ import (
                     "-c",
                         #"""
                         NOCALHOST_URL=$(cat /nocalhost/token.json | jq .url | sed 's/\"//g')
+                        echo $NOCALHOST_URL
+                        until $(curl --output /dev/null --silent --head --fail $NOCALHOST_URL/health); do
+                            printf 'nocalhost ready'
+                            sleep 2
+                        done
                         TOKEN=$(cat /nocalhost/token.json | jq .data.token | sed 's/\"//g')
                         export GITURL=$(echo $GITURL | sed 's/ //g')
                         echo $GITURL
@@ -307,6 +326,11 @@ import (
                 "-c",
                     #"""
                     NOCALHOST_URL=$(cat /nocalhost/token.json | jq .url | sed 's/\"//g')
+                    echo $NOCALHOST_URL
+                    until $(curl --output /dev/null --silent --head --fail $NOCALHOST_URL/health); do
+                        printf 'nocalhost ready'
+                        sleep 2
+                    done
                     TOKEN=$(cat /nocalhost/token.json | jq .data.token | sed 's/\"//g')
                     # Get Cluster
                     clusterID=$(curl -s --location --request GET $NOCALHOST_URL/v2/dev_space/cluster \
