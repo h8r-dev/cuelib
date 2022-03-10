@@ -118,6 +118,7 @@ import (
                     echo 'OK' > /done/wait
                 """#
             ]
+            always: true
             mount: "/github": from: githubMemberSource
             mount: "/nocalhost": from: nocalhostTokenSource
             mount: "/waitnocalhost": from: waitNocalhost
@@ -180,6 +181,7 @@ import (
             if (myKubeconfig & dagger.#Secret) != _|_ {
                 mount: "/kubeconfig": secret: myKubeconfig
             }
+            always: true
             mount: "/nocalhost": from: nocalhostTokenSource
             mount: "/waitnocalhost": from: waitNocalhost
         },
@@ -256,6 +258,7 @@ import (
                         --data-raw '{"context":"{\"application_url\":\"'$GITURL'\",\"application_name\":\"'$APPNAME'\",\"source\":\"'$SOURCE'\",\"install_type\":\"'$INSTALL_TYPE'\",\"resource_dir\":[]}","status":1}'
                     """#
                 ]
+                always: true
                 mount: "/nocalhost": from: nocalhostTokenSource
                 mount: "/waitnocalhost": from: waitNocalhost
             },
@@ -336,6 +339,7 @@ import (
                     printf '%s\n' "${namespaceArray[@]}" | jq -R . | jq -s . > /output/devNamespace.json
                 """#
             ]
+            always: true
             mount: "/nocalhost": from: nocalhostTokenSource
             mount: "/user": from: waitUser
             mount: "/cluster": from: waitCluster

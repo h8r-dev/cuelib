@@ -37,6 +37,9 @@ import (
 
 	// TODO default repoDir path, now you can set "." with dagger dir type
 	sourceCodeDir: dagger.#Artifact @dagger(input)
+
+	// Wait for
+	waitFor: *null | dagger.#Artifact
     
     // Application URL
 	install: {
@@ -52,6 +55,9 @@ import (
 				mount: "/root": from:             sourceCodeDir
 				if (myKubeconfig & dagger.#Secret) != _|_ {
 					mount: "/kubeconfig": secret: myKubeconfig
+				}
+				if waitFor != null {
+					mount: "/waitfor": from: waitFor
 				}
 				dir: "/"
 				env: {
@@ -80,6 +86,12 @@ import (
 							--docker-username=$GHCRNAME \
 							--docker-password=$(cat /run/secrets/github) \
 							-o yaml --dry-run=client | kubectl apply -f -
+
+							# Try delete pending-upgrade helm release
+							# https://github.com/helm/helm/issues/4558
+							kubectl -n $NAMESPACE delete secret -l name=$RELEASE_NAME,status=pending-upgrade
+							kubectl -n $NAMESPACE delete secret -l name=$RELEASE_NAME,status=pending-install
+
 							helm upgrade $RELEASE_NAME . --dependency-update --namespace $NAMESPACE --create-namespace --install --set "ingress.hosts[0].host=$INGRESSHOSTNAME,ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=ImplementationSpecific"
 							# wait for deployment ready
 							kubectl wait --for=condition=available --timeout=600s deployment/$RELEASE_NAME -n $NAMESPACE

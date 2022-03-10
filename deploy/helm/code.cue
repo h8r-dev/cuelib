@@ -29,6 +29,7 @@ package helm
 	# Try delete pending-upgrade helm release
 	# https://github.com/helm/helm/issues/4558
 	kubectl -n "$KUBE_NAMESPACE" delete secret -l name="$HELM_NAME",status=pending-upgrade
+	kubectl -n "$KUBE_NAMESPACE" delete secret -l name="$HELM_NAME",status=pending-install
 
 	case "$HELM_ACTION" in
 	    install)

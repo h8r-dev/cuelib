@@ -5,6 +5,7 @@ import (
 	"alpha.dagger.io/dagger/op"
 	"encoding/yaml"
 	"alpha.dagger.io/kubernetes"
+	"strings"
 )
 
 #Ingress: {
@@ -36,7 +37,7 @@ import (
 	// generate the resource manifest.
 	
 	manifest: {
-		if ingressVersion == "v1" {
+		if strings.TrimSpace(ingressVersion) == "v1" {
 			apiVersion: "networking.k8s.io/v1"
 			kind:       "Ingress"
 			metadata: {
@@ -48,6 +49,7 @@ import (
 				}
 			}
 			spec: {
+				"ingressClassName": "nginx"
 				rules: [{
 					host:  hostName
 					http: paths: [{
@@ -65,7 +67,7 @@ import (
 				}]
 			}
 		}
-		if ingressVersion == "v1beta1" {
+		if strings.TrimSpace(ingressVersion) == "v1beta1" {
 			apiVersion: "networking.k8s.io/v1beta1"
 			kind:       "Ingress"
 			metadata: {
@@ -86,12 +88,6 @@ import (
 						backend: {
 							serviceName: backendServiceName
 							servicePort: backendServicePort
-							// service: {
-							// 	"name": backendServiceName
-							// 	port: {
-							// 		"number": backendServicePort
-							// 	}
-							// }
 						}
 					}]
 				}]
