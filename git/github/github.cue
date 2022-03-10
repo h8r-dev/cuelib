@@ -130,7 +130,6 @@ import (
                             fi
 
                             git config --global user.email $GITHUB_EMAIL
-                            git config --local http.postBuffer 524288000
 
                             # (replace by action) add label link image and docker, package will be public
                             # link_repo="LABEL org.opencontainers.image.source=https://github.com/$GITHUB_ID/$REPO_NAME"
