@@ -76,17 +76,12 @@ import (
 					"pipefail",
 					"-c",
 					#"""
+							set +e
 							# use setup avoid download everytime
 							export KUBECONFIG=/kubeconfig
 							mkdir /root/.ssh && cp /root/infra/ssh/id_rsa /root/.ssh/id_rsa && chmod 400 /root/.ssh/id_rsa
 							GIT_SSH_COMMAND="ssh -vvv -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone $REPO_URL
 							cd $RELEASE_NAME-helm
-							kubectl create secret docker-registry h8r-secret \
-							--docker-server=ghcr.io \
-							--docker-username=$GHCRNAME \
-							--docker-password=$(cat /run/secrets/github) \
-							--namespace $NAMESPACE \
-							-o yaml --dry-run=client | kubectl apply -f -
 
 							# Try delete pending-upgrade helm release
 							# https://github.com/helm/helm/issues/4558
@@ -94,6 +89,15 @@ import (
 							kubectl -n $NAMESPACE delete secret -l name=$RELEASE_NAME,status=pending-install
 
 							helm upgrade $RELEASE_NAME . --dependency-update --namespace $NAMESPACE --create-namespace --install --set "ingress.hosts[0].host=$INGRESSHOSTNAME,ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=ImplementationSpecific"
+							
+							# create secret
+							kubectl create secret docker-registry h8r-secret \
+							--docker-server=ghcr.io \
+							--docker-username=$GHCRNAME \
+							--docker-password=$(cat /run/secrets/github) \
+							--namespace $NAMESPACE \
+							-o yaml --dry-run=client | kubectl apply -f -
+
 							# wait for deployment ready
 							kubectl wait --for=condition=available --timeout=600s deployment/$RELEASE_NAME -n $NAMESPACE
 							echo $INGRESSHOSTNAME > /end_point.txt
