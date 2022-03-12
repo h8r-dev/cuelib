@@ -10,12 +10,15 @@ import (
 	// Kube config file
 	kubeconfig: dagger.#Input & {dagger.#Secret}
 
-	// namespace
-	namespace: dagger.#Input & {string | *"loki"}
+	// Namespace
+	namespace: string | *"monitoring"
+
+	// Secret Name
+	secretName: string
 
 	#code: #"""
-	while ! kubectl get secret/loki-grafana -n $KUBE_NAMESPACE; do sleep 5; done
-	secret=$(kubectl get secret --namespace $KUBE_NAMESPACE loki-grafana -o jsonpath='{.data.admin-password}' | base64 -d ; echo)
+	while ! kubectl get secret/$SECRET_NAME -n $KUBE_NAMESPACE; do sleep 5; done
+	secret=$(kubectl get secret --namespace $KUBE_NAMESPACE $SECRET_NAME -o jsonpath='{.data.admin-password}' | base64 -d ; echo)
 	echo $secret > /result
 	"""#
 
@@ -46,6 +49,7 @@ import (
 				env: {
 					KUBECONFIG:     "/kubeconfig"
 					KUBE_NAMESPACE: namespace
+					SECRET_NAME: secretName
 				}
 				if (kubeconfig & dagger.#Secret) != _|_ {
 					mount: "/kubeconfig": secret: kubeconfig

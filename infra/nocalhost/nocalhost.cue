@@ -52,14 +52,15 @@ import (
                 "-c",
                 #"""
                     until $(curl --output /dev/null --silent --head --fail $URL/health); do
-                        printf 'nocalhost ready'
+                        printf 'nocalhost not ready'
                         sleep 2
                     done
                     mkdir /output
-                    curl --location --request POST $URL/v1/login \
+                    curl --retry 10 --retry-delay 10 --location --request POST $URL/v1/login \
                     --header "Content-Type: application/json" \
                     --data-raw '{"email":"'$USER'","password":"'$PASSWORD'"}' > /output/token.json
                     echo "$(jq '. += {"url": "'$URL'"}' /output/token.json)" > /output/token.json
+                    cat /output/token.json
                 """#
             ]
             always: true
@@ -325,6 +326,7 @@ import (
                 "pipefail",
                 "-c",
                     #"""
+                    set +e
                     NOCALHOST_URL=$(cat /nocalhost/token.json | jq .url | sed 's/\"//g')
                     echo $NOCALHOST_URL
                     until $(curl --output /dev/null --silent --head --fail $NOCALHOST_URL/health); do

@@ -7,6 +7,54 @@ import (
 	"alpha.dagger.io/alpine"
 )
 
+#WaitFor: {
+	// Kube config file
+	kubeconfig: dagger.#Input & {dagger.#Secret}
+
+	// Workload type
+	worklaod: *"pod" | string
+
+	#runCode: #"""
+		while ! kubectl get $WORKLOAD; do sleep 3; done
+		mkdir /output
+		echo 'OK' > /output/done
+		"""#
+	
+	#up: [
+		op.#Load & {
+			from: kubernetes.#Kubectl
+		},
+
+		op.#WriteFile & {
+			dest:    "/entrypoint.sh"
+			content: #runCode
+		},
+
+		op.#Exec & {
+			always: true
+			args: [
+				"/bin/bash",
+				"--noprofile",
+				"--norc",
+				"-eo",
+				"pipefail",
+				"/entrypoint.sh",
+			]
+			env: {
+				KUBECONFIG:     "/kubeconfig"
+				WORKLOAD: worklaod
+			}
+			if (kubeconfig & dagger.#Secret) != _|_ {
+				mount: "/kubeconfig": secret: kubeconfig
+			}
+		},
+
+		op.#Subdir & {
+			dir: "/output"
+		},
+	]
+}
+
 #GetKubectlOutput: {
 	// Kube config file
 	kubeconfig: dagger.#Input & {dagger.#Secret}
@@ -35,7 +83,7 @@ import (
 					"--norc",
 					"-eo",
 					"pipefail",
-					"cat /entrypoint.sh",
+					"/entrypoint.sh",
 				]
 				env: {
 					KUBECONFIG:     "/kubeconfig"
