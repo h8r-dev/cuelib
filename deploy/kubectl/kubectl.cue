@@ -15,7 +15,11 @@ import (
 	worklaod: *"pod" | string
 
 	#runCode: #"""
-		while ! kubectl get $WORKLOAD; do sleep 3; done
+		while ! kubectl get $WORKLOAD; 
+		do
+			sleep 3
+			echo 'wait for '$WORKLOAD
+		done
 		mkdir /output
 		echo 'OK' > /output/done
 		"""#
@@ -47,6 +51,75 @@ import (
 			if (kubeconfig & dagger.#Secret) != _|_ {
 				mount: "/kubeconfig": secret: kubeconfig
 			}
+		},
+
+		op.#Subdir & {
+			dir: "/output"
+		},
+	]
+}
+
+#CreateImagePullSecret: {
+	// Kube config file
+	kubeconfig: dagger.#Input & {dagger.#Secret}
+
+	// Image pull username
+	username: string
+
+	// Image pull password
+	password: dagger.#Input & {dagger.#Secret}
+
+	// Image pull secret name
+	secretName: *"h8r-secret" | string
+
+	// Server url
+	server: *"ghcr.io" | string
+
+	// Namespace
+	namespace: string
+
+	#runCode: #"""
+		kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
+		kubectl create secret docker-registry $SECRETNAME \
+		--docker-server=$SERVER \
+		--docker-username=$USERNAME \
+		--docker-password=$(cat /run/secrets/github) \
+		--namespace $NAMESPACE \
+		-o yaml --dry-run=client | kubectl apply -f -
+		mkdir /output
+		"""#
+	
+	#up: [
+		op.#Load & {
+			from: kubernetes.#Kubectl
+		},
+
+		op.#WriteFile & {
+			dest:    "/entrypoint.sh"
+			content: #runCode
+		},
+
+		op.#Exec & {
+			always: true
+			args: [
+				"/bin/bash",
+				"--noprofile",
+				"--norc",
+				"-eo",
+				"pipefail",
+				"/entrypoint.sh",
+			]
+			env: {
+				KUBECONFIG:     "/kubeconfig"
+				USERNAME: username
+				SECRETNAME: secretName
+				SERVER: server
+				NAMESPACE: namespace
+			}
+			if (kubeconfig & dagger.#Secret) != _|_ {
+				mount: "/kubeconfig": secret: kubeconfig
+			}
+			mount: "/run/secrets/github": secret: password
 		},
 
 		op.#Subdir & {

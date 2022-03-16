@@ -17,7 +17,11 @@ import (
 	secretName: string
 
 	#code: #"""
-	while ! kubectl get secret/$SECRET_NAME -n $KUBE_NAMESPACE; do sleep 5; done
+	while ! kubectl get secret/$SECRET_NAME -n $KUBE_NAMESPACE;
+	do
+		sleep 5
+		echo 'wait for secret/'$SECRET_NAME
+	done
 	secret=$(kubectl get secret --namespace $KUBE_NAMESPACE $SECRET_NAME -o jsonpath='{.data.admin-password}' | base64 -d ; echo)
 	echo $secret > /result
 	"""#
