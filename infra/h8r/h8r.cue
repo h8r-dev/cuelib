@@ -49,7 +49,7 @@ import (
                     #"""
 					export HOST=$(echo $HOST | awk '$1=$1')
 					echo '{"name":"'$NAME'","host":"'$HOST'","domain":"'$DOMAIN'","port":"'$PORT'"}'
-					check=$(curl --retry 10 --retry-delay 2 --insecure -X POST --header 'Content-Type: application/json' --data-raw '{"name":"'$NAME'","host":"'$HOST'","domain":"'$DOMAIN'","port":"'$PORT'"}' api.stack.h8r.io/api/v1/cluster/ingress | jq .message | sed 's/\"//g')
+					check=$(curl --retry 50 --retry-delay 2 --insecure -X POST --header 'Content-Type: application/json' --data-raw '{"name":"'$NAME'","host":"'$HOST'","domain":"'$DOMAIN'","port":"'$PORT'"}' api.stack.h8r.io/api/v1/cluster/ingress | jq .message | sed 's/\"//g')
 					echo $check
 					if [ "$check" == "ok" ]; then
 						echo "Create h8r ingress success"

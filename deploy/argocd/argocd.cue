@@ -18,8 +18,8 @@ import(
     // Manifest url
     url: string
 
-	// Wait
-	waitFor: dagger.#Artifact
+	// Wait for
+	waitFor: [string]: from: dagger.#Artifact
 
     // ArgoCD admin password
     install: {
@@ -46,18 +46,24 @@ import(
                     "pipefail",
                     "-c",
                     #"""
-                        # patch deployment cause ingress redirct: https://github.com/argoproj/argo-cd/issues/2953
-                        kubectl patch deployment argocd-server --patch '{"spec": {"template": {"spec": {"containers": [{"name": "argocd-server","command": ["argocd-server", "--insecure"]}]}}}}' -n $NAMESPACE
-                        kubectl wait --for=condition=Available deployment argocd-server -n $NAMESPACE --timeout 600s
-                        secret=$(kubectl -n $NAMESPACE get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d; echo)
-                        echo $secret > /secret
-                        """#,
+					# patch deployment cause ingress redirct: https://github.com/argoproj/argo-cd/issues/2953
+					kubectl patch deployment argocd-server --patch '{"spec": {"template": {"spec": {"containers": [{"name": "argocd-server","command": ["argocd-server", "--insecure"]}]}}}}' -n $NAMESPACE
+					kubectl patch statefulset argocd-application-controller --patch '{"spec": {"template": {"spec": {"containers": [{"name": "argocd-application-controller","command": ["argocd-application-controller", "--app-resync", "30"]}]}}}}' -n $NAMESPACE
+					kubectl wait --for=condition=Available deployment argocd-server -n $NAMESPACE --timeout 600s
+					kubectl rollout status --watch --timeout=600s statefulset/argocd-application-controller -n $NAMESPACE
+					secret=$(kubectl -n $NAMESPACE get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d; echo)
+					echo $secret > /secret
+					"""#,
                 ]
                 env: {
                     KUBECONFIG:     "/kubeconfig"
                     NAMESPACE: namespace
                 }
-				mount: "/waitfor": from: waitFor
+				mount: {
+					for dest, o in waitFor {
+						"\(dest)": o
+					}
+				}
             },
             
             op.#Export & {
@@ -199,7 +205,7 @@ import(
 				setOps="$setOps --helm-set "$i""
 				done
 				echo $setOps
-				argocd app create "$APP_NAME" \
+				while ! argocd app create "$APP_NAME" \
 					--repo "$APP_REPO" \
 					--path "$APP_PATH" \
 					--dest-server "$APP_SERVER" \
@@ -208,7 +214,11 @@ import(
 					--sync-policy automated \
 					--grpc-web \
 					--upsert \
-					$setOps
+					$setOps; 
+				do 
+					sleep 5
+					echo 'wait for argocd project: '$APP_REPO
+				done
 			"""#
 		always: true
 		env: {

@@ -15,7 +15,11 @@ import (
 	worklaod: *"pod" | string
 
 	#runCode: #"""
-		while ! kubectl get $WORKLOAD; do sleep 3; done
+		while ! kubectl get $WORKLOAD; 
+		do
+			sleep 3
+			echo 'wait for '$WORKLOAD
+		done
 		mkdir /output
 		echo 'OK' > /output/done
 		"""#
