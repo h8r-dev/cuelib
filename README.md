@@ -2,7 +2,7 @@
 
 `Heighliner` `CUE Module`，用于构建云原生最佳实践，引入方法：
 ```
-import "github.com/h8r/cue"
+import "github.com/h8r-dev/cuelib"
 ```
 
 # Package
