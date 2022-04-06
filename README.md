@@ -10,31 +10,60 @@ import "github.com/h8r/cue"
 `CUE Package` 按职责划分：
 
 ```
-├── alert                         // 报警
-├── build                         // 构建
-│   ├── github                    
+.
+├── README.md
+├── apm
+│   ├── newrelic
+│   └── skywalking
+├── cd
+│   ├── argocd
+│   ├── fluxcd
+│   └── tekton
+├── ci
+│   ├── github
 │   ├── gitlab
 │   ├── jenkins
 │   └── tekton
-├── cloud                         // 云厂商
+├── cloud
 │   ├── aliyun
 │   ├── huawei
 │   └── tencent
-│       └── tke
-│           └── tke.cue
 ├── cue.mod
 │   └── module.cue
-├── deploy                        // 部署
-│   ├── argocd
+├── cue.mods
+├── deploy
 │   ├── helm
-│   │   └── helm.cue
-│   └── kubectl
-├── git                           // 代码仓库
-│   ├── coding
+│   ├── kubectl
+│   └── kustomize
+├── dev
+│   └── nocalhost
+├── framework
+│   ├── gin
+│   ├── react
+│   └── vue
+├── h8r
+│   └── ingress
+├── logging
+├── monitoring
+│   ├── datadog
+│   ├── grafana
+│   └── prometheus
+├── network
+│   └── ingress
+├── package
+│   ├── acr
+│   ├── ghcr
+│   ├── harbor
+│   └── jfrog
+├── scm
+│   ├── bitbucket
 │   ├── github
-│   │   └── github.cue
 │   └── gitlab
-├── logs                          // 日志
-├── monitoring                    // 监控
-└── tracing                       // 分布式追踪
+├── tracing
+│   ├── jaeger
+│   └── zipkin
+└── utils
+    ├── base
+    ├── fs
+    └── random
 ```
