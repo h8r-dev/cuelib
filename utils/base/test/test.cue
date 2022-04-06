@@ -8,8 +8,8 @@ import (
 
 dagger.#Plan & {
 	actions: {
-		baseImage:    base.#Kubectl & {
-			version:     "v1.23.5"
+		baseImage: base.#Kubectl & {
+			version: "v1.23.5"
 		}
 
 		test: bash.#Run & {

@@ -13,8 +13,8 @@ dagger.#Plan & {
 		}
 
 		write: fs.#WriteFile & {
-			input:   baseImage.output
-			path:    "/test.txt"
+			input:    baseImage.output
+			path:     "/test.txt"
 			contents: "foo-bar"
 		}
 
