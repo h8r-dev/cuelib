@@ -1,4 +1,4 @@
-package ingress
+package h8r
 
 import (
 	"dagger.io/dagger"

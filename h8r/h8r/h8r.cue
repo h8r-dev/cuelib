@@ -14,6 +14,7 @@ import (
 	domain:           string
 	port:             string | *"80"
 	h8rServerAddress: string | *"api.stack.h8r.io/api/v1/cluster/ingress"
+	always:           bool | *true
 
 	baseImage: alpine.#Build & {
 		packages: {
@@ -23,7 +24,8 @@ import (
 	}
 
 	create: bash.#Run & {
-		input: baseImage.output
+		input:    baseImage.output
+		"always": always
 		env: HOST:        host
 		script: contents: #"""
 			sh_c='sh -c'
