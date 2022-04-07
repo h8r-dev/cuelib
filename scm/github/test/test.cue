@@ -1,8 +1,10 @@
-package main
+package github
 
 import (
 	"dagger.io/dagger"
 	"dagger.io/dagger/core"
+
+	"github.com/h8r-dev/cuelib/scm/github"
 )
 
 dagger.#Plan & {
@@ -22,7 +24,7 @@ dagger.#Plan & {
 				path: "code"
 			}
 
-			initHelmRepo: #InitRepo & {
+			initHelmRepo: github.#InitRepo & {
 				suffix:            "-deploy"
 				sourceCodePath:    "helm"
 				isHelmChart:       "true"
@@ -31,6 +33,11 @@ dagger.#Plan & {
 				"organization":    organization
 				sourceCodeDir:     _source.output
 			}
+
+			getOrganizationMembers: github.#GetOrganizationMembers & {
+				"accessToken":  accessToken
+				"organization": organization
+			}
 		}
 
 		testd: {
@@ -38,7 +45,7 @@ dagger.#Plan & {
 			accessToken:     client.env.GITHUB_TOKEN
 			organization:    client.env.ORGANIZATION
 
-			deleteHelmRepo: #DeleteRepo & {
+			deleteHelmRepo: github.#DeleteRepo & {
 				suffix:            "-deploy"
 				"applicationName": applicationName
 				"accessToken":     accessToken
