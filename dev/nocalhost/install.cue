@@ -22,7 +22,7 @@ import (
 
 	helmInstall: helm.#Chart & {
 		"name":       name
-		repository:   "https://nocalhost-helm.pkg.coding.net/nocalhost/nocalhost"
+		repository:   "https://nocalhost.github.io/charts"
 		chart:        "nocalhost"
 		"namespace":  namespace
 		"kubeconfig": kubeconfig
