@@ -6,12 +6,10 @@ import (
 )
 
 dagger.#Plan & {
-	client: {
-		env: {
-			APP_NAME:     string
-			ORGANIZATION: string
-			GITHUB_TOKEN: dagger.#Secret
-		}
+	client: env: {
+		APP_NAME:     string
+		ORGANIZATION: string
+		GITHUB_TOKEN: dagger.#Secret
 	}
 
 	actions: {
@@ -30,7 +28,7 @@ dagger.#Plan & {
 				"applicationName": applicationName
 				"accessToken":     accessToken
 				"organization":    organization
-				"sourceCodeDir":   _source.output
+				sourceCodeDir:     _source.output
 			}
 
 			initFrontendRepo: #InitRepo & {
@@ -39,7 +37,7 @@ dagger.#Plan & {
 				"applicationName": applicationName
 				"accessToken":     accessToken
 				"organization":    organization
-				"sourceCodeDir":   _source.output
+				sourceCodeDir:     _source.output
 			}
 
 			initHelmRepo: #InitRepo & {
@@ -49,7 +47,7 @@ dagger.#Plan & {
 				"applicationName": applicationName
 				"accessToken":     accessToken
 				"organization":    organization
-				"sourceCodeDir":   _source.output
+				sourceCodeDir:     _source.output
 			}
 		}
 
