@@ -105,7 +105,7 @@ import (
 		while ! kubectl get svc/ingress-nginx-controller -n $KUBE_NAMESPACE; do sleep 1; done
 		external_ip=""; while [ -z $external_ip ]; do echo "Waiting for end point..."; external_ip=$(kubectl get svc ingress-nginx-controller --namespace $KUBE_NAMESPACE --template="{{range .status.loadBalancer.ingress}}{{.ip}}{{end}}"); [ -z "$external_ip" ] && sleep 1; done; echo "End point ready-" && echo $external_ip; export endpoint=$external_ip
 		#kubectl get services --namespace $KUBE_NAMESPACE ingress-nginx-controller --output jsonpath='{.status.loadBalancer.ingress[0].ip}' > /endpoint
-		echo $endpoint | awk '$1=$1' > /endpoint
+		printf $endpoint | awk '$1=$1' > /endpoint
 		"""#
 
 	_kubectl: base.#Kubectl
@@ -151,9 +151,9 @@ import (
 		script: contents: #"""
 			ingress_result=$(kubectl --kubeconfig /kubeconfig api-resources --api-group=networking.k8s.io)
 			if [[ $ingress_result =~ "v1beta1" ]]; then
-				echo 'v1beta1' > /result
+				printf 'v1beta1' > /result
 			else
-				echo 'v1' > /result
+				printf 'v1' > /result
 			fi
 			"""#
 		//export: files: "/result": string

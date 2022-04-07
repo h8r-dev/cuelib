@@ -23,7 +23,8 @@ import (
 			echo 'wait for secret/'$SECRET_NAME
 		done
 		secret=$(kubectl get secret --namespace $KUBE_NAMESPACE $SECRET_NAME -o jsonpath='{.data.admin-password}' | base64 -d ; echo)
-		echo $secret > /result
+		echo $secret
+		printf $secret > /result
 		"""#
 
 	_kubectl: base.#Kubectl

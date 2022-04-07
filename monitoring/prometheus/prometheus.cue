@@ -1,7 +1,6 @@
 package prometheus
 
 import (
-	//"strings"
 	"dagger.io/dagger"
 	"github.com/h8r-dev/cuelib/deploy/helm"
 	"github.com/h8r-dev/cuelib/deploy/kubectl"
@@ -10,7 +9,7 @@ import (
 )
 
 // need to wait for ingress nginx installed
-#installPrometheusStack: {
+#InstallPrometheusStack: {
 	uri:                string
 	kubeconfig:         string | dagger.#Secret
 	ingressVersion:     string

@@ -7,11 +7,32 @@ import (
 )
 
 dagger.#Plan & {
-	_uri: random.#String
-	actions: test: h8r.#CreateH8rIngress & {
-		name:   "just-a-test-" + _uri.output
-		host:   "1.1.1.1"
-		domain: _uri.output + ".foo.bar"
-		port:   "80"
+	client: {
+		// commands: kubeconfig: {
+		//  name: "cat"
+		//  args: ["\(env.KUBECONFIG)"]
+		//  stdout: dagger.#Secret
+		// }
+		// env: KUBECONFIG: string
+	}
+
+	actions: test: {
+		randomString: random.#String & {
+
+		}
+
+		uri:  randomString.output
+		name: uri + "-testcase"
+
+		create: h8r.#CreateH8rIngress & {
+			"name": name
+			host:   "1.1.1.1"
+			domain: uri + ".testcase.stack.h8r.io"
+		}
+
+		delete: h8r.#DeleteH8rIngress & {
+			"name":  name
+			waitFor: create.success
+		}
 	}
 }
