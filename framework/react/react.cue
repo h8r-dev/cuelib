@@ -32,7 +32,7 @@ import (
 			docker.#Copy & {
 				contents: dockerfile.output
 				dest:     "/root/" + name + "/"
-			}
+			},
 		]
 	}
 	output: run.output
