@@ -22,12 +22,10 @@ ingressNginxSetting: #"""
 
 dagger.#Plan & {
 	client: {
-		commands: {
-			kubeconfig: {
-				name: "cat"
-				args: ["\(env.KUBECONFIG)"]
-				stdout: dagger.#Secret
-			}
+		commands: kubeconfig: {
+			name: "cat"
+			args: ["\(env.KUBECONFIG)"]
+			stdout: dagger.#Secret
 		}
 		env: KUBECONFIG: string
 	}
