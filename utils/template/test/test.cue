@@ -12,9 +12,9 @@ dagger.#Plan & {
 
 	actions: {
 		write: core.#WriteFile & {
-			input: dagger.#Scratch
+			input:    dagger.#Scratch
 			contents: "{{ .abc }} hello"
-			path: "/abcde.txt"
+			path:     "/abcde.txt"
 		}
 		test: template.#RenderDir & {
 			yamlData: yaml.Marshal({
@@ -22,7 +22,7 @@ dagger.#Plan & {
 				bcd: "Heighliner"
 			})
 			inputDir: write.output
-			path: ""
+			path:     ""
 		}
 	}
 }

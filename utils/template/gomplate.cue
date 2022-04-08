@@ -26,19 +26,17 @@ import (
 	run: docker.#Build & {
 		steps: [
 			fs.#WriteFile & {
-				input: base.output
+				input:    base.output
 				contents: yamlData
-				path: "/gomplate-data.yaml"
+				path:     "/gomplate-data.yaml"
 			},
 			bash.#Run & {
 				workdir: "/root"
 				always:  true
-				env: {
-					INPUT_PATH: path
-				}
+				env: INPUT_PATH: path
 
 				mounts: "inputDir": {
-					dest: "/input-dirs"
+					dest:     "/input-dirs"
 					contents: inputDir
 				}
 
