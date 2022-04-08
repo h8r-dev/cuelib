@@ -8,9 +8,7 @@ import (
 
 // for test
 dagger.#Plan & {
-	client: env: {
-		APP_NAME: string
-	}
+	client: env: APP_NAME: string
 
 	actions: test: {
 		appName:  client.env.APP_NAME
