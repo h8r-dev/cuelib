@@ -18,6 +18,10 @@ import (
 		path: "dockerfile"
 	}
 
+	configFile: core.#Source & {
+		path: "config"
+	}
+
 	base: docker.#Pull & {
 		source: "index.docker.io/node:lts-stretch"
 	}
@@ -40,6 +44,10 @@ import (
 			},
 			docker.#Copy & {
 				contents: dockerfile.output
+				dest:     "/root/" + name + "/"
+			},
+			docker.#Copy & {
+				contents: configFile.output
 				dest:     "/root/" + name + "/"
 			},
 		]

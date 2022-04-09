@@ -23,7 +23,9 @@ dagger.#Plan & {
 			command: {
 				name: "sh"
 				flags: "-c": """
-					cd /root/\(appName) && ls -al
+					cd /root/\(appName)
+					ls -al
+					cat next.config.js
 					"""
 			}
 		}

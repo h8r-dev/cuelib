@@ -129,6 +129,7 @@ import (
 			export GIT_URL=$(cat /create.json | jq .clone_url | sed 's?https://?https://'$GIT_USERNAME':'$(cat /run/secrets/github)'@?' | sed 's/\"//g')
 			echo $GIT_URL
 			cd $SOURCECODEPATH && git init && git remote add origin $GIT_URL
+			ls -al
 
 			printf $SSH_URL > /create.json
 
