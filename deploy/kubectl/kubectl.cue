@@ -6,7 +6,6 @@ import (
 	"dagger.io/dagger/core"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
-	"github.com/h8r-dev/cuelib/utils/base"
 )
 
 #CreateImagePullSecret: {
@@ -39,7 +38,9 @@ import (
 		mkdir /output
 		"""#
 
-	_kubectl: base.#Kubectl
+	_kubectl: docker.#Pull & {
+		source: "index.docker.io/alpine/k8s:1.22.6"
+	}
 
 	run: bash.#Run & {
 		input: _kubectl.output
@@ -76,7 +77,9 @@ import (
 	// Kube config file
 	kubeconfig: string | dagger.#Secret
 
-	_kubectlImage: base.#Kubectl
+	_kubectlImage: docker.#Pull & {
+		source: "index.docker.io/alpine/k8s:1.22.6"
+	}
 
 	waitFor: bool | *true
 
@@ -87,6 +90,7 @@ import (
 			flags: "-c": #"""
 			mkdir /source
 			printf '\#(manifest)' > /source/k8s.yaml
+			cat /source/k8s.yaml
 			kubectl create namespace "$KUBE_NAMESPACE"  > /dev/null 2>&1 || true
 			if [ -d /source ] || [ -f /source ]; then
 				kubectl --namespace "$KUBE_NAMESPACE" apply -R -f /source
@@ -124,7 +128,9 @@ import (
 
 	waitFor: bool | *true
 
-	_kubectlImage: base.#Kubectl
+	_kubectlImage: docker.#Pull & {
+		source: "index.docker.io/alpine/k8s:1.22.6"
+	}
 
 	run: bash.#Run & {
 		input: _kubectlImage.output
