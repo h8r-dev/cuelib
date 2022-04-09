@@ -1,4 +1,4 @@
-package dns
+package cloudflare
 
 import (
 	"dagger.io/dagger"
@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 )
 
-#CloudflareCreateDNSRecord: {
+#CreateDNSRecord: {
 
 	// record
 	record: {

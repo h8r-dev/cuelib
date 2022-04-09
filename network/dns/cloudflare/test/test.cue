@@ -1,8 +1,8 @@
-package dns
+package cloudflare
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/cuelib/network/dns"
+	"github.com/h8r-dev/cuelib/network/dns/cloudflare"
 )
 
 // for test
@@ -14,7 +14,7 @@ dagger.#Plan & {
 		RECORD_NAME:    string
 		RECORD_CONTENT: string
 	}
-	actions: test: dns.#CloudflareCreateDNSRecord & {
+	actions: test: cloudflare.#CreateDNSRecord & {
 		zoneID:   client.env.ZONE_ID
 		apiToken: client.env.API_TOKEN
 		record: {
