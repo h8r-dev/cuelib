@@ -55,9 +55,7 @@ import (
 	setSecret: bash.#Run & {
 		input:   base.output
 		workdir: "/root"
-		env: {
-			API_TOKEN: apiToken
-		}
+		env: API_TOKEN: apiToken
 		mounts: "kubeconfig": {
 			dest:     "/root/.kube/config"
 			contents: kubeconfig
@@ -66,23 +64,23 @@ import (
 	}
 
 	issuerManifest: {
-		"apiVersion": "cert-manager.io/v1"
-		"kind":       "Issuer"
-		"metadata": {
+		apiVersion: "cert-manager.io/v1"
+		kind:       "Issuer"
+		metadata: {
 			"name":      name
 			"namespace": namespace
 		}
-		"spec": "acme": {
-			"email":  email
-			"server": "https://acme-v02.api.letsencrypt.org/directory"
-			"privateKeySecretRef": "name": name + "-private-key"
-			"solvers": [
+		spec: acme: {
+			"email": email
+			server:  "https://acme-v02.api.letsencrypt.org/directory"
+			privateKeySecretRef: "name": name + "-private-key"
+			solvers: [
 				{
-					"dns01": "cloudflare": {
+					dns01: cloudflare: {
 						"email": email
-						"apiTokenSecretRef": {
-							"name": "cloudflare-api-token"
-							"key":  "token"
+						apiTokenSecretRef: {
+							name: "cloudflare-api-token"
+							key:  "token"
 						}
 					}
 				},
@@ -91,7 +89,7 @@ import (
 	}
 
 	manifest: kubectl.#Manifest & {
-		"manifest":   yaml.Marshal(issuerManifest)
+		manifest:     yaml.Marshal(issuerManifest)
 		"namespace":  namespace
 		"kubeconfig": kubeconfig
 		"waitFor":    waitFor
@@ -113,25 +111,25 @@ import (
 	domains: [...string]
 
 	cert: {
-		"apiVersion": "cert-manager.io/v1"
-		"kind":       "Certificate"
-		"metadata": {
+		apiVersion: "cert-manager.io/v1"
+		kind:       "Certificate"
+		metadata: {
 			"name":      name
 			"namespace": namespace
 		}
-		"spec": {
-			"secretName": name + "-secret"
-			"issuerRef": {
-				"name": issuer
-				"kind": "Issuer"
+		spec: {
+			secretName: name + "-secret"
+			issuerRef: {
+				name: issuer
+				kind: "Issuer"
 			}
 			"commonName": commonName
-			"dnsNames":   domains
+			dnsNames:     domains
 		}
 	}
 
 	manifest: kubectl.#Manifest & {
-		"manifest":   yaml.Marshal(cert)
+		manifest:     yaml.Marshal(cert)
 		"namespace":  namespace
 		"kubeconfig": kubeconfig
 		"waitFor":    waitFor
