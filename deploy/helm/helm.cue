@@ -5,7 +5,6 @@ import (
 	"universe.dagger.io/docker"
 	"dagger.io/dagger"
 	"dagger.io/dagger/core"
-	"github.com/h8r-dev/cuelib/utils/base"
 )
 
 // Install a Helm chart
@@ -45,11 +44,15 @@ import (
 	// The wait option will be set automatically if atomic is used
 	atomic: *true | bool
 
+	set: string | *"heighlinerDomain=heighliner.dev"
+
 	// Kube config file
 	kubeconfig: string | dagger.#Secret
 
 	// Helm version
 	version: *"3.5.2" | string
+
+	chartVersion: string | *"latest"
 
 	// Kubectl version
 	kubectlVersion: *"v1.23.5" | string
@@ -57,7 +60,9 @@ import (
 	// Wait for all pods to be ready before marking the release as successful
 	waitFor: bool | *true
 
-	_kubectl: base.#Kubectl
+	base: docker.#Pull & {
+		source: "index.docker.io/alpine/k8s:1.22.6"
+	}
 
 	_writeYaml: output: core.#FS
 
@@ -72,7 +77,7 @@ import (
 	_writeYamlOutput: _writeYaml.output
 
 	run: docker.#Run & {
-		input:  _kubectl.output
+		input:  base.output
 		always: true
 		command: {
 			name: "sh"
@@ -86,12 +91,14 @@ import (
 			if repository != null {
 				HELM_REPO: repository
 			}
-			HELM_NAME:    name
-			CHART_NAME:   chart
-			HELM_ACTION:  action
-			HELM_TIMEOUT: timeout
-			HELM_WAIT:    strconv.FormatBool(wait)
-			HELM_ATOMIC:  strconv.FormatBool(atomic)
+			HELM_NAME:          name
+			CHART_NAME:         chart
+			HELM_ACTION:        action
+			HELM_TIMEOUT:       timeout
+			HELM_WAIT:          strconv.FormatBool(wait)
+			HELM_ATOMIC:        strconv.FormatBool(atomic)
+			HELM_SET:           set
+			HELM_CHART_VERSION: chartVersion
 		}
 		mounts: {
 
