@@ -1,69 +1,8 @@
 # CUE
 
-`Heighliner` `CUE Module`，用于构建云原生最佳实践，引入方法：
+CUE Package Library for building Heighliner stack. You can import them in cue file easily.
 ```
-import "github.com/h8r-dev/cuelib"
+import "github.com/h8r-dev/cuelib/cd/argocd"
 ```
 
-# Package
-
-`CUE Package` 按职责划分：
-
-```
-.
-├── README.md
-├── apm
-│   ├── newrelic
-│   └── skywalking
-├── cd
-│   ├── argocd
-│   ├── fluxcd
-│   └── tekton
-├── ci
-│   ├── github
-│   ├── gitlab
-│   ├── jenkins
-│   └── tekton
-├── cloud
-│   ├── aliyun
-│   ├── huawei
-│   └── tencent
-├── cue.mod
-│   └── module.cue
-├── cue.mods
-├── deploy
-│   ├── helm
-│   ├── kubectl
-│   └── kustomize
-├── dev
-│   └── nocalhost
-├── framework
-│   ├── gin
-│   ├── react
-│   └── vue
-├── h8r
-│   └── ingress
-├── logging
-├── monitoring
-│   ├── datadog
-│   ├── grafana
-│   └── prometheus
-├── network
-│   └── ingress
-├── package
-│   ├── acr
-│   ├── ghcr
-│   ├── harbor
-│   └── jfrog
-├── scm
-│   ├── bitbucket
-│   ├── github
-│   └── gitlab
-├── tracing
-│   ├── jaeger
-│   └── zipkin
-└── utils
-    ├── base
-    ├── fs
-    └── random
-```
+See more about [How to customize a stack based on cuelib](https://heighliner.dev/docs/core_features/stacks/custom_stack)
