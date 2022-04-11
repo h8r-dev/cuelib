@@ -21,6 +21,8 @@ package helm
 	OPTS=""
 	OPTS="$OPTS --timeout "$HELM_TIMEOUT""
 	OPTS="$OPTS --namespace "$KUBE_NAMESPACE""
+	OPTS="$OPTS --set $HELM_SET"
+	OPTS="$OPTS --version $HELM_CHART_VERSION"
 	[ "$HELM_WAIT" = "true" ] && OPTS="$OPTS --wait"
 	[ "$HELM_ATOMIC" = "true" ] && OPTS="$OPTS --atomic"
 	[ -f "/helm/values.yaml" ] && OPTS="$OPTS -f /helm/values.yaml"
