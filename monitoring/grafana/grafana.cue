@@ -4,6 +4,7 @@ import (
 	"dagger.io/dagger"
 	"universe.dagger.io/bash"
 	"github.com/h8r-dev/cuelib/utils/base"
+	"strconv"
 )
 
 #GetGrafanaSecret: {
@@ -15,6 +16,8 @@ import (
 
 	// Secret Name
 	secretName: string
+
+	waitFor: bool
 
 	#code: #"""
 		while ! kubectl get secret/$SECRET_NAME -n $KUBE_NAMESPACE;
@@ -37,6 +40,7 @@ import (
 			KUBECONFIG:     "/kubeconfig"
 			KUBE_NAMESPACE: namespace
 			SECRET_NAME:    secretName
+			WAIT_FOR:       strconv.FormatBool(waitFor)
 		}
 		script: contents: #code
 		mounts: "kubeconfig": {

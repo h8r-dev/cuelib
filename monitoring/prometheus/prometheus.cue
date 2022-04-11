@@ -20,16 +20,18 @@ import (
 	name:               string
 	namespace:          string
 	waitFor:            bool
+	chartVersion:       string
 
 	kubePrometheus: helm.#Chart & {
-		"name":       name
-		repository:   "https://prometheus-community.github.io/helm-charts"
-		chart:        "kube-prometheus-stack"
-		action:       "installOrUpgrade"
-		"namespace":  namespace
-		"kubeconfig": kubeconfig
-		wait:         true
-		"waitFor":    waitFor
+		"name":         name
+		repository:     "https://prometheus-community.github.io/helm-charts"
+		chart:          "kube-prometheus-stack"
+		action:         "installOrUpgrade"
+		"namespace":    namespace
+		"kubeconfig":   kubeconfig
+		wait:           true
+		"waitFor":      waitFor
+		"chartVersion": "34.9.0"
 	}
 
 	alertmanagerIngress: {
@@ -122,16 +124,19 @@ import (
 }
 
 #installLokiStack: {
-	namespace:  string
-	kubeconfig: string | dagger.#Secret
-	install:    helm.#Chart & {
-		name:         "loki"
-		repository:   "https://grafana.github.io/helm-charts"
-		chart:        "loki-stack"
-		action:       "installOrUpgrade"
-		"namespace":  namespace
-		"kubeconfig": kubeconfig
-		wait:         true
+	namespace:    string
+	kubeconfig:   string | dagger.#Secret
+	chartVersion: string
+
+	install: helm.#Chart & {
+		name:           "loki"
+		repository:     "https://grafana.github.io/helm-charts"
+		chart:          "loki-stack"
+		action:         "installOrUpgrade"
+		"namespace":    namespace
+		"kubeconfig":   kubeconfig
+		wait:           true
+		"chartVersion": chartVersion
 	}
 
 	success: install.success

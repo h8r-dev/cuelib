@@ -52,7 +52,7 @@ import (
 	// Helm version
 	version: *"3.5.2" | string
 
-	chartVersion: string | *"latest"
+	chartVersion: string | *""
 
 	// Kubectl version
 	kubectlVersion: *"v1.23.5" | string

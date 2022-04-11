@@ -15,17 +15,19 @@ import (
 	ingressVersion: string
 	domain:         string
 	// ingress ip
-	host:      string
-	name:      string
-	namespace: string
-	waitFor:   bool
+	host:         string
+	name:         string
+	namespace:    string
+	waitFor:      bool
+	chartVersion: string
 
 	helmInstall: helm.#Chart & {
-		"name":       name
-		repository:   "https://nocalhost.github.io/charts"
-		chart:        "nocalhost"
-		"namespace":  namespace
-		"kubeconfig": kubeconfig
+		"name":         name
+		repository:     "https://nocalhost.github.io/charts"
+		chart:          "nocalhost"
+		"namespace":    namespace
+		"kubeconfig":   kubeconfig
+		"chartVersion": chartVersion
 	}
 
 	getIngressYaml: ingress.#Ingress & {
