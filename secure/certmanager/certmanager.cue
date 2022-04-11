@@ -6,7 +6,7 @@ import (
 	"universe.dagger.io/docker"
 	"dagger.io/dagger"
 	"github.com/h8r-dev/cuelib/deploy/kubectl"
-	"encoding/yaml"
+	"encoding/json"
 	"strconv"
 
 )
@@ -65,7 +65,7 @@ import (
 			contents: kubeconfig
 		}
 		always: true
-		script: contents: "kubectl --namespace cert-manager create secret generic cloudflare-api-token --from-literal=token=$API_TOKEN"
+		script: contents: "kubectl --namespace cert-manager create secret generic cloudflare-api-token --from-literal=token=$API_TOKEN --dry-run=client -o yaml | kubectl apply -f -"
 	}
 
 	issuerManifest: {
@@ -94,7 +94,7 @@ import (
 	}
 
 	manifest: kubectl.#Manifest & {
-		manifest:     yaml.Marshal(issuerManifest)
+		manifest:     json.Marshal(issuerManifest)
 		"namespace":  namespace
 		"kubeconfig": kubeconfig
 		"waitFor":    waitFor
@@ -134,7 +134,7 @@ import (
 	}
 
 	manifest: kubectl.#Manifest & {
-		manifest:     yaml.Marshal(cert)
+		manifest:     json.Marshal(cert)
 		"namespace":  namespace
 		"kubeconfig": kubeconfig
 		"waitFor":    waitFor
