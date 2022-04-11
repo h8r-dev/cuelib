@@ -7,6 +7,7 @@ import (
 	"dagger.io/dagger"
 	"github.com/h8r-dev/cuelib/deploy/kubectl"
 	"encoding/yaml"
+	"strconv"
 
 )
 
@@ -55,12 +56,16 @@ import (
 	setSecret: bash.#Run & {
 		input:   base.output
 		workdir: "/root"
-		env: API_TOKEN: apiToken
+		env: {
+			API_TOKEN: apiToken
+			WAIT_FOR:  strconv.FormatBool(waitFor)
+		}
 		mounts: "kubeconfig": {
 			dest:     "/root/.kube/config"
 			contents: kubeconfig
 		}
-		script: contents: "kubectl --namespace cert-manager delete secret cloudflare-api-token && kubectl --namespace cert-manager create secret generic cloudflare-api-token --from-literal=token=$API_TOKEN"
+		always: true
+		script: contents: "kubectl --namespace cert-manager create secret generic cloudflare-api-token --from-literal=token=$API_TOKEN"
 	}
 
 	issuerManifest: {
