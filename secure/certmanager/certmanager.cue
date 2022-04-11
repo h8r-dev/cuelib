@@ -34,7 +34,7 @@ import (
 			dest:     "/root/.kube/config"
 			contents: kubeconfig
 		}
-		script: contents: "kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.8.0/cert-manager.crds.yaml"
+		script: contents: "kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/" + install.chartVersion + "/cert-manager.crds.yaml"
 	}
 	// Wait for all pods to be ready before marking the release as successful
 	waitFor: bool | *true
@@ -70,7 +70,7 @@ import (
 
 	issuerManifest: {
 		apiVersion: "cert-manager.io/v1"
-		kind:       "Issuer"
+		kind:       "ClusterIssuer"
 		metadata: {
 			"name":      name
 			"namespace": namespace
@@ -126,7 +126,7 @@ import (
 			secretName: name + "-secret"
 			issuerRef: {
 				name: issuer
-				kind: "Issuer"
+				kind: "ClusterIssuer"
 			}
 			"commonName": commonName
 			dnsNames:     domains

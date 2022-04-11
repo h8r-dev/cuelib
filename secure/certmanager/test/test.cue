@@ -34,8 +34,8 @@ dagger.#Plan & {
 			kubeconfig: client.commands.kubeconfig.stdout
 			waitFor:    declareIssuer.success
 			namespace:  "for-test"
-			name:       "for-h8r"
-			commonName: "heighliner.pro"
+			name:       "for-h8r-3"
+			commonName: "h8r.app"
 			domains: [
 				"h8r.app",
 				"*.h8r.app",
