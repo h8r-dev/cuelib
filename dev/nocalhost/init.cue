@@ -48,4 +48,6 @@ import (
 		"url":   url
 		waitFor: createTeam.success & createCluster.success
 	}
+
+	nsOutput: createDevSpace.nsOutput
 }

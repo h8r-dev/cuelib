@@ -156,7 +156,7 @@ import (
 	url:     string
 	waitFor: bool
 
-	baseImage: alpine.#Build & {
+	_baseImage: alpine.#Build & {
 		packages: {
 			bash: {}
 			curl: {}
@@ -165,9 +165,9 @@ import (
 		}
 	}
 
-	run: bash.#Run & {
+	_run: bash.#Run & {
 		always: true
-		input:  baseImage.output
+		input:  _baseImage.output
 		env: WAIT_FOR:    strconv.FormatBool(waitFor)
 		script: contents: #"""
 			sh_c='sh -c'
@@ -203,8 +203,14 @@ import (
 				DATA_RAW='{"cluster_id":'"$cluster_id"',"cluster_admin":0,"user_id":'"$id"',"space_name":"","space_resource_limit":null}'
 				echo $DATA_RAW
 				do_create="curl --retry 20 --retry-delay 2 $HEADER --location --request POST $URL --data-raw '$DATA_RAW'"
-				$sh_c "$do_create"
+				messages="$($sh_c "$do_create")"
+				ns=$(echo "$messages" |  jq -r '.data | .namespace')
+				echo "$ns" >> /namespaces
 			done
 			"""#
+
+		export: files: "/namespaces": string
 	}
+
+	nsOutput: _run.export.files."/namespaces"
 }
