@@ -129,11 +129,8 @@ import (
 			export GIT_URL=$(cat /create.json | jq .clone_url | sed 's?https://?https://'$GIT_USERNAME':'$(cat /run/secrets/github)'@?' | sed 's/\"//g')
 			echo $GIT_URL
 			cd $SOURCECODEPATH && git init && git remote add origin $GIT_URL
-			ls -al
 
 			printf $SSH_URL > /create.json
-
-			export GITHUB_TOKEN="$(cat /run/secrets/github)"
 
 			# push empty commit
 			curl -sH "Authorization: token $(cat /run/secrets/github)" https://api.github.com/user/emails > /user.json
@@ -147,7 +144,7 @@ import (
 			fi
 
 			# add action secret for user repo
-			gh secret set PAT < /run/secrets/github --repos $GITHUB_ID/$REPO_NAME
+			gh secret set PAT -b $GITHUB_TOKEN --repos $GITHUB_ID/$REPO_NAME
 
 			git config --global user.email $GITHUB_EMAIL
 
