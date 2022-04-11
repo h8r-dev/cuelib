@@ -23,15 +23,15 @@ import (
 	chartVersion:       string
 
 	kubePrometheus: helm.#Chart & {
-		"name":         name
-		repository:     "https://prometheus-community.github.io/helm-charts"
-		chart:          "kube-prometheus-stack"
-		action:         "installOrUpgrade"
-		"namespace":    namespace
-		"kubeconfig":   kubeconfig
-		wait:           true
-		"waitFor":      waitFor
-		"chartVersion": "34.9.0"
+		"name":       name
+		repository:   "https://prometheus-community.github.io/helm-charts"
+		chart:        "kube-prometheus-stack"
+		action:       "installOrUpgrade"
+		"namespace":  namespace
+		"kubeconfig": kubeconfig
+		wait:         true
+		"waitFor":    waitFor
+		chartVersion: "34.9.0"
 	}
 
 	alertmanagerIngress: {
