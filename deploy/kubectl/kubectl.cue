@@ -28,14 +28,15 @@ import (
 	namespace: string
 
 	#code: #"""
-		kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
-		kubectl create secret docker-registry $SECRETNAME \
-		--docker-server=$SERVER \
-		--docker-username=$USERNAME \
-		--docker-password=$(cat /run/secrets/github) \
-		--namespace $NAMESPACE \
-		-o yaml --dry-run=client | kubectl apply -f -
-		mkdir /output
+		for NAMESPACE in ${NAMESPACES[@]}; do
+			kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
+			kubectl create secret docker-registry $SECRETNAME \
+			--docker-server=$SERVER \
+			--docker-username=$USERNAME \
+			--docker-password=$(cat /run/secrets/github) \
+			--namespace $NAMESPACE \
+			-o yaml --dry-run=client | kubectl apply -f -
+		done
 		"""#
 
 	_kubectl: docker.#Pull & {
@@ -59,7 +60,7 @@ import (
 			USERNAME:   username
 			SECRETNAME: secretName
 			SERVER:     server
-			NAMESPACE:  namespace
+			NAMESPACES: namespace
 		}
 		always: true
 		script: contents: #code
