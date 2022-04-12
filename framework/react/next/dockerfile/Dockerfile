@@ -2,7 +2,11 @@ FROM node:12.22.0 as front-builder
 
 WORKDIR /root
 COPY . /root
-RUN npm install next react react-dom typescript && yarn add --dev @types/react @types/node
+
+# Install dependencies
+RUN yarn install
+
+# Build and export a SPA website.
 RUN npx next build && npx next export
 
 FROM nginx
