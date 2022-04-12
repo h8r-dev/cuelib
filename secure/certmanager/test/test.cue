@@ -33,13 +33,18 @@ dagger.#Plan & {
 		declareCert: certmanager.#ACMECert & {
 			kubeconfig: client.commands.kubeconfig.stdout
 			waitFor:    declareIssuer.success
-			namespace:  "for-test"
-			name:       "for-h8r-3"
+			namespace:  "h8r-system"
+			name:       "heighliner-app"
 			commonName: "h8r.app"
 			domains: [
 				"h8r.app",
 				"*.h8r.app",
-				"*.go-gin.h8r.app",
+				"*.dev.h8r.app",
+				"*.prod.h8r.app",
+				"*.test.h8r.app",
+				"*.staging.h8r.app",
+				"*.alpha.h8r.app",
+				"*.beta.h8r.app",
 			]
 		}
 	}
