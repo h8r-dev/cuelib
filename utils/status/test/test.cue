@@ -25,9 +25,7 @@ dagger.#Plan & {
 
 		output: bash.#Run & {
 			input: run.output
-			env: {
-				UUID: run.content
-			}
+			env: UUID: run.content
 			script: contents: #"""
 				    echo $UUID
 				"""#
