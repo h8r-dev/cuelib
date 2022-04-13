@@ -36,11 +36,11 @@ import (
 			kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 			
 			# get secret
-			secret=$(kubectl get secrets/heighliner-status --template={{.data.\#(keyName)}} --ignore-not-found -n $NAMESPACE | base64 -d)
+			secret=$(kubectl get secrets/heighliner-status --template={{.data.$KEY_NAME}} --ignore-not-found -n $NAMESPACE | base64 -d)
 			if [ -z "$secret" ]; then
-				kubectl create secret generic heighliner-status --from-literal=\#(keyName)=\#(keyValue) --dry-run=client -o yaml -n $NAMESPACE | kubectl apply -f -
-				echo 'secret value: '\#(keyValue)
-				printf "\#(keyValue)" > /result
+				kubectl create secret generic heighliner-status --from-literal=$KEY_NAME=$KEY_VALUE --dry-run=client -o yaml -n $NAMESPACE | kubectl apply -f -
+				echo 'secret value: '$KEY_VALUE
+				printf "$KEY_VALUE" > /result
 				exit 0
 			else
 				echo 'secret value: '$secret
@@ -55,6 +55,8 @@ import (
 			WAIT_FOR:   strconv.FormatBool(waitFor)
 			KUBECONFIG: "/etc/kubernetes/config"
 			NAMESPACE:  namespace
+			KEY_NAME:   keyName
+			KEY_VALUE:  keyValue
 		}
 		always: true
 		export: files: "/result": string
